@@ -25,8 +25,8 @@ class FakerDataSeeder extends Seeder
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
                 'image' => $faker->imageUrl, // Menggunakan URL gambar palsu
-                'jabatan' => $faker->randomElement(['Bos', 'Manager', 'Staff', 'Karyawan']),
-                'role' => $faker->randomElement([0, 1]),
+                'position' => $faker->randomElement(['Bos', 'Manager', 'Staff', 'Karyawan']),
+                'role' => $faker->randomElement(['Admin', 'Employee']),
                 'password' => Hash::make($password)
             ]);
         }

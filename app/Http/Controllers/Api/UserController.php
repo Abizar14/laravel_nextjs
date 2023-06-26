@@ -13,7 +13,7 @@ class UserController extends Controller
 {
     public function index() {
         // get data user
-        $user = User::latest()->paginate(5);
+        $user = User::latest()->get();
         
         // return collection dari user resource
         return new UserResource(true, 'Succesfully', $user);
@@ -26,7 +26,7 @@ class UserController extends Controller
             'name'     => 'required',
             'email'   => 'required',
             'role' => 'required',
-            'jabatan' => 'required',
+            'position' => 'required',
             'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'password' => 'required'
         ]);
@@ -45,7 +45,7 @@ class UserController extends Controller
             'name'     => $request->name,
             'email'   => $request->email,
             'role'   => $request->role,
-            'jabatan'   => $request->jabatan,
+            'position'   => $request->position,
             'image'     => $image->hashName(),
             'password'   => $request->password,
         ]);
@@ -87,7 +87,7 @@ class UserController extends Controller
                 'name'     => $request->name,
                 'email'   => $request->email,
                 'role'   => $request->role,
-                'jabatan'   => $request->jabatan,
+                'position'   => $request->position,
                 'image'   => $image->hashName(),
                 //  
             ]);
@@ -99,7 +99,7 @@ class UserController extends Controller
                 'name'     => $request->name,
                 'email'   => $request->email,
                 'role'   => $request->role,
-                'jabatan'   => $request->jabatan,
+                'position'   => $request->position,
             ]);
         }
 
@@ -118,4 +118,6 @@ class UserController extends Controller
         //return response
         return new UserResource(true, 'Data user Berhasil Dihapus!', null);
     }
+
+    
 }
