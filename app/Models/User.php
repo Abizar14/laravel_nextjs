@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'position',
         'role',
+        'image',
         'password'
     ];
     /**
@@ -48,4 +49,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Absensi::class);
     }
+
+    public function sisaJatahCuti()
+    {
+        $totalCuti = $this->absensis()->where('keterangan', 'cuti')->count();
+        $jatahCuti = $this->jatah_cuti ?? 0;
+
+        return max(0, $jatahCuti - $totalCuti);
+    }
+
+    
 }

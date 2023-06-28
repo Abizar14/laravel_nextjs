@@ -23,3 +23,5 @@ Route::apiResource('/users', App\Http\Controllers\Api\UserController::class);
 Route::apiResource('/absensi', App\Http\Controllers\Api\AbsensiController::class);
 
 Route::apiResource('/users/{id}/absensi', App\Http\Controllers\Api\UserAbsensiController::class);
+Route::apiResource('/users/absensi/cuti', App\Http\Controllers\Api\AbsensiController::class);
+Route::apiResource('/users/absensi/sakit', App\Http\Controllers\Api\AbsensiController::class);

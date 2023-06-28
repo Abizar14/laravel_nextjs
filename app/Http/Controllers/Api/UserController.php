@@ -28,7 +28,7 @@ class UserController extends Controller
             'role' => 'required',
             'position' => 'required',
             'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'password' => 'required'
+            'password' => 'required' 
         ]);
 
         //check if validation fails
