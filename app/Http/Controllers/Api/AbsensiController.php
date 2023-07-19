@@ -90,9 +90,9 @@ class AbsensiController extends Controller
             'keterangan' => 'required|in:masuk,alpha,telat,cuti,izin,sakit',
             'jam_masuk' => 'required|date_format:H:i:s',
             'image' => 'required',
-            'coordinates' => 'required|array',
-            'coordinates.lat' => 'required|numeric',
-            'coordinates.lng' => 'required|numeric',
+            // 'coordinates' => 'required|array',
+            // 'coordinates.lat' => 'required|numeric',
+            // 'coordinates.lng' => 'required|numeric',
  
         ]);
 
@@ -101,8 +101,8 @@ class AbsensiController extends Controller
             return response()->json($validator->errors(), 402);
         }
 
-        $latitude = $request->coordinates['lat'];
-        $longitude = $request->coordinates['lng'];
+        // $latitude = $request->coordinates['lat'];
+        // $longitude = $request->coordinates['lng'];
 
         // cek batasan absen masuk
         $jamMasuk = $request->jam_masuk;
@@ -135,7 +135,7 @@ class AbsensiController extends Controller
             "tanggal" => $tanggal,
             "jam_masuk" => $localtime,
             "image" => $request->image,
-            "coordinates" => ['lat' => $latitude, 'lng' => $longitude]
+            // "coordinates" => ['lat' => $latitude, 'lng' => $longitude]
         ];
 
         $absensi = Absensi::create($data);
@@ -143,7 +143,7 @@ class AbsensiController extends Controller
         // Menambahkan pesan terlambat absen ke dalam respons JSON
     $response = [
     'absensi' => $absensi,
-    'terlambat' => $isTerlambat ? 'Anda Terlambat Absen Masuk' : 'Absen masuk berhasil'
+    'terlambat' => $isTerlambat ? 'Anda Terlambat Absen Masuk' : 'Absen Masuk Berhasil'
     ];
         return new AbsensiResource(true, 'Absen', $response);
     }
