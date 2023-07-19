@@ -11,22 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('absensi', function (Blueprint $table) {
+        Schema::create('jadwal_kerjas', function (Blueprint $table) {
             $table->id();
-            $table->enum('keterangan',['Masuk','Alpha','Telat','Sakit']);
-            $table->date('tanggal')->nullable();
+
+            $table->string('slug');
+            $table->date('tgl_masuk');
+    
             $table->time('jam_masuk')->nullable();
             $table->time('jam_keluar')->nullable();
-            $table->time('jam_kerja')->nullable();
-            $table->string('image')->nullable();
-            $table->point('coordinates')->nullable();
-            $table->timestamps();
 
-            
             // $table->foreign('user_id')->references('id')->on('users');
-            // $table->foreign('jadwalkerja_id')->references('id')->on('jadwal_kerjas');
 
-            
+
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 
@@ -35,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('absensi');
+        Schema::dropIfExists('jadwal_kerjas');
     }
 };

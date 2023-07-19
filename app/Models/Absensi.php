@@ -12,10 +12,14 @@ class Absensi extends Model
     protected $table = 'absensi';
     protected $fillable = [
         'user_id',
+        'jadwalkerja_id',
         'tanggal',
         'keterangan',
         'jam_masuk',
-        'jam_keluar'
+        'jam_keluar',
+        'jam_kerja',
+        'image',
+        // 'coordinates'
     ];
 
     public $timestamps = false;

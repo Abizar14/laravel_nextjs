@@ -159,6 +159,7 @@ return [
         /*
          * Package Service Providers...
          */
+        Stevebauman\Location\LocationServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -182,6 +183,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Location' => 'Stevebauman\Location\Facades\Location'
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 

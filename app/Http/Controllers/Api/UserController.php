@@ -23,10 +23,16 @@ class UserController extends Controller
     {
         //define validation rules
         $validator = Validator::make($request->all(), [
+            'nik' => 'required',
+            'role_id' => 'required',
+            // 'jadwalkerja_id' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'name'     => 'required',
             'email'   => 'required',
-            'role' => 'required',
             'position' => 'required',
+            'dob' => 'required',
+            'phone_number' => 'required',
             'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'password' => 'required' 
         ]);
@@ -42,10 +48,16 @@ class UserController extends Controller
 
         //create post
         $user = User::create([
+            'nik' => $request->nik,
+            'role_id'   => $request->role_id,
+            // 'jadwalkerja_id'   => $request->jadwalkerja_id,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'name'     => $request->name,
             'email'   => $request->email,
-            'role'   => $request->role,
             'position'   => $request->position,
+            'dob' => $request->dob,
+            'phone_number' => $request->phone_number,
             'image'     => $image->hashName(),
             'password'   => $request->password,
         ]);
@@ -54,7 +66,10 @@ class UserController extends Controller
         return new UserResource(true, 'Data Post Berhasil Ditambahkan!', $user);
     }
 
-    public function show(User $user) {
+    public function show(Request $request) {
+        
+        $id = $request->input('id');
+        $user = User::where('id', $id)->get();
 
         return new UserResource(true, 'Data Berhasil Ditampilkan', $user);
     }

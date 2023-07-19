@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\JadwalKerja;
 
 class User extends Authenticatable
 {
@@ -18,10 +19,16 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'role_id',
+        'jadwalkerja_id',
+        'nik',
+        'first_name',
+        'last_name',
         'name',
         'email',
         'position',
-        'role',
+        'dob',
+        'phone_number',
         'image',
         'password'
     ];
@@ -50,6 +57,17 @@ class User extends Authenticatable
         return $this->hasMany(Absensi::class);
     }
 
+    public function jadwalKerja() {
+        return $this->hasMany(JadwalKerja::class);
+    }
+
+    public function cuti() {
+        return $this->hasOne(Cuti::class);
+    }
+    public function izin() {
+        return $this->hasOne(Izin::class);
+    }
+
     public function sisaJatahCuti()
     {
         $totalCuti = $this->absensis()->where('keterangan', 'cuti')->count();
@@ -58,5 +76,8 @@ class User extends Authenticatable
         return max(0, $jatahCuti - $totalCuti);
     }
 
+    public function getNameAttribute() {
+        return $this->first_name . '' . $this->last_name;
+    }
     
 }
