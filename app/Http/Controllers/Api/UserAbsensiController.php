@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class UserAbsensiController extends Controller
 {
     public function index($id) {
-        $user = User::with('absensi', 'jadwalKerja', 'cuti', 'izin')->findOrFail($id);
+        $user = User::with('absensi', 'jadwalKerja', 'cuti', 'izin', 'salary', 'position')->findOrFail($id);
 
         return new UserAbsensiResource(true, 'Succesfully', $user);
     }

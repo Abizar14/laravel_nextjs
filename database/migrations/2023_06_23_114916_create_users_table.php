@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             // $table->bigInteger('role_id')->unsigned();
+
             $table->string('nik')->unique();
             $table->string('first_name');
             $table->string('last_name');
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('position');
+            // $table->string('position');
             $table->date('dob')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('image');
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->timestamps();
 
             // $table->foreign('role_id')->references('id')->on('roles');
+            
 
             
             

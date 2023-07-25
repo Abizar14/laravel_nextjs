@@ -30,7 +30,7 @@ class UserController extends Controller
             'last_name' => 'required',
             'name'     => 'required',
             'email'   => 'required',
-            'position' => 'required',
+            'position_id' => 'required',
             'dob' => 'required',
             'phone_number' => 'required',
             'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -55,11 +55,11 @@ class UserController extends Controller
             'last_name' => $request->last_name,
             'name'     => $request->name,
             'email'   => $request->email,
-            'position'   => $request->position,
             'dob' => $request->dob,
             'phone_number' => $request->phone_number,
             'image'     => $image->hashName(),
             'password'   => $request->password,
+            'position_id'   => $request->position_id
         ]);
 
         //return response
@@ -102,7 +102,7 @@ class UserController extends Controller
                 'name'     => $request->name,
                 'email'   => $request->email,
                 'role'   => $request->role,
-                'position'   => $request->position,
+                // 'position'   => $request->position,
                 'image'   => $image->hashName(),
                 //  
             ]);
@@ -114,7 +114,7 @@ class UserController extends Controller
                 'name'     => $request->name,
                 'email'   => $request->email,
                 'role'   => $request->role,
-                'position'   => $request->position,
+                // 'position'   => $request->position,
             ]);
         }
 

@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('positions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->enum('status', ['Staff', 'Daily Worker', 'Magang']);
-            $table->double('salary')->default(0);
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->unsignedBigInteger('position_id');
+            $table->foreign('position_id')->references('id')->on('positions');
         });
     }
 
@@ -25,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('positions');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

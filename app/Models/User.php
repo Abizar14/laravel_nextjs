@@ -30,7 +30,8 @@ class User extends Authenticatable
         'dob',
         'phone_number',
         'image',
-        'password'
+        'password',
+        'position_id'
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -66,6 +67,14 @@ class User extends Authenticatable
     }
     public function izin() {
         return $this->hasOne(Izin::class);
+    }
+
+    public function salary() {
+        return $this->hasMany(Salary::class);
+    }
+
+    public function position() {
+        return $this->belongsTo(Position::class);
     }
 
     public function sisaJatahCuti()

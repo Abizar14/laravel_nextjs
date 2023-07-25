@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Api\AbsensiController;
 use App\Http\Controllers\Api\CutiController;
+use App\Http\Controllers\Api\IzinController;
+use App\Http\Controllers\Api\PositionController;
+use App\Http\Controllers\Api\SalaryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,9 +34,21 @@ Route::post('/absensi/store', [AbsensiController::class, 'store']);
 Route::apiResource('/jadwalkerja', App\Http\Controllers\Api\JadwalKerjaController::class);
 
 // Cuti
-Route::get('/cuti',[CutiController::class, 'store']);
+Route::get('/cuti',[CutiController::class, 'index']);
 Route::post('/cuti',[CutiController::class, 'store']);
 
+// Izin
+Route::get('izin', [IzinController::class, 'index']);
+Route::post('izin', [IzinController::class, 'store']);
+
+// Salary
+Route::get('/salary', [SalaryController::class, 'index']);
+Route::post('/salary', [SalaryController::class, 'store']);
+
+// Position
+Route::get('/position', [PositionController::class, 'index']);
+Route::post('/position', [PositionController::class, 'store']);
+
 // Relationship Absensi Dan User
-Route::apiResource('/users/absensi/jadwalkerja/cuti/izin/{id}', App\Http\Controllers\Api\UserAbsensiController::class);
+Route::apiResource('/users/absensi/jadwalkerja/cuti/izin/salary/position/{id}', App\Http\Controllers\Api\UserAbsensiController::class);
 
