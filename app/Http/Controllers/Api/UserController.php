@@ -42,13 +42,15 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $nikGenerate = '23' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+
         // upload image
         $image = $request->file('image');
         $image->storeAs('public/users', $image->hashName());
 
         //create post
         $user = User::create([
-            'nik' => $request->nik,
+            'nik' => $nikGenerate,
             'role_id'   => $request->role_id,
             // 'jadwalkerja_id'   => $request->jadwalkerja_id,
             'first_name' => $request->first_name,

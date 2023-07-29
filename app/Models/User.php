@@ -26,7 +26,7 @@ class User extends Authenticatable
         'last_name',
         'name',
         'email',
-        'position',
+        // 'position',
         'dob',
         'phone_number',
         'image',
@@ -62,6 +62,10 @@ class User extends Authenticatable
         return $this->hasMany(JadwalKerja::class);
     }
 
+    public function role() {
+        return $this->belongsTo(Roles::class, 'role_id');
+    }
+
     public function cuti() {
         return $this->hasOne(Cuti::class);
     }
@@ -86,7 +90,7 @@ class User extends Authenticatable
     }
 
     public function getNameAttribute() {
-        return $this->first_name . '' . $this->last_name;
+        return $this->first_name . ' ' . $this->last_name;
     }
     
 }
