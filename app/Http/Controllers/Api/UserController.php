@@ -42,7 +42,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $nikGenerate = '23' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+        $nikGenerate = 'AB' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
 
         // upload image
         $image = $request->file('image');
