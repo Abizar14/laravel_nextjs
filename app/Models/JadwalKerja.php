@@ -14,10 +14,14 @@ class JadwalKerja extends Model
     protected $table = 'jadwal_kerjas';
 
     protected $fillable = [
-        'user_id','slug', 'tgl_masuk', 'jam_masuk', 'jam_keluar'    
+        'user_id', 'slug', 'tgl_masuk', 'jam_masuk', 'jam_keluar'    
     ];
 
     public function absensi() {
         return $this->hasMany(Absensi::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
     }
 }

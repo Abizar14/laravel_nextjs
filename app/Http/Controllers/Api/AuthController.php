@@ -56,15 +56,25 @@ class AuthController extends Controller
     public function login(Request $request) {
         if(Auth::attempt(['nik' => $request->nik, 'password' => $request->password])) {
             // Authentication passed...
-            $user = User::with('role')->where('nik', $request->nik)->first();
+            $user = User::with('role', 'position', 'jadwalkerja')->where('nik', $request->nik)->first();
             $role = $user->role->name;
+            $position = $user->position->name;
+            // $jadwalkerja = $user->jadwalkerja->slug;
             
             if($user){
                 $success['token'] = $user->createToken('auth_token')->plainTextToken;
                 $success['name'] = $user->name;
                 $success['nik'] = $user->nik;
                 $success['role'] = $role; 
-
+                $success['id'] = $user->id;
+                $success['first_name'] = $user->first_name;
+                $success['last_name'] = $user->last_name;
+                $success['email'] = $user->email;
+                $success['dob'] = $user->dob;
+                $success['phone_number'] = $user->phone_number;
+                $success['image'] = $user->image;
+                $success['position'] = $position;
+                // $success['jadwalkerja'] = $jadwalkerja;
                 return response()->json([
                     'success'=> true,
                     'message' => 'Login Berhasil',
@@ -90,4 +100,10 @@ class AuthController extends Controller
     public function logined(Request $request) {
         return response()->json(Auth::user());
     }
+
+    
+public function getCsrfCookie()
+{
+    return response()->json(['message' => 'CSRF Cookie obtained'], 200)->withCookie('XSRF-TOKEN', csrf_token());
+}
 }
