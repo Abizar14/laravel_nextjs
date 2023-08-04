@@ -20,8 +20,8 @@ class JadwalKerjaController extends Controller
         
         // Membuat Validasi Data Jadwal Kerja
         $validate = Validator::make($request->all(), [
-            'user_id' => 'required',
-            'slug' => 'required',
+            // 'user_id' => 'required',
+            'shift' => 'required',
             'tgl_masuk' => 'required|date_format:Y-m-d',
             'jam_masuk' => 'required|date_format:H:i:s',
             'jam_keluar' => 'required|date_format:H:i:s'
@@ -36,8 +36,8 @@ class JadwalKerjaController extends Controller
 
         // jika validasi berhasil insert data ke database
         $jadwalkerja = JadwalKerja::create([
-            'user_id' => $request->user_id,
-            'slug' => $request->slug,
+            // 'user_id' => $request->user_id,
+            'shift' => $request->shift,
             'tgl_masuk' => $request->tgl_masuk,
             'jam_masuk' => $request->jam_masuk,
             'jam_keluar' => $request->jam_keluar

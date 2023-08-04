@@ -13,18 +13,24 @@ class Absensi extends Model
     protected $fillable = [
         'user_id',
         'jadwalkerja_id',
+        'terlambat',
         'tanggal',
         'keterangan',
         'jam_masuk',
         'jam_keluar',
         'jam_kerja',
         'image',
+        'already_absen'
         // 'coordinates'
     ];
 
-    public $timestamps = false;
+    // // public $timestamps = false;
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function jadwalKerja() {
+        return $this->belongsTo(JadwalKerja::class);
     }
 }

@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('absensi', function (Blueprint $table) {
             $table->id();
-            $table->enum('keterangan',['Masuk','Alpha','Telat','Sakit']);
+            $table->enum('keterangan',['Masuk','Alpha','Telat']);
+            $table->string('terlambat')->nullable();
             $table->date('tanggal')->nullable();
             $table->time('jam_masuk')->nullable();
             $table->time('jam_keluar')->nullable();

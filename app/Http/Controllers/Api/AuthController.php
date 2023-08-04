@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
+use App\Models\JadwalKerja;
 use App\Models\User;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -55,26 +59,51 @@ class AuthController extends Controller
 
     public function login(Request $request) {
         if(Auth::attempt(['nik' => $request->nik, 'password' => $request->password])) {
-            // Authentication passed...
-            $user = User::with('role', 'position', 'jadwalkerja')->where('nik', $request->nik)->first();
+            // Authentication passed
+            $user = User::with(['role', 'position'])->where('nik', $request->nik)->first();
+            
+            // Mengambil Data JadwalKerja 
+            $jadwalId = JadwalKerja::where('shift', $request->shift)->first();
+
+            // Mengambil data absensi
+            $absensi = Absensi::where('user_id', $user->id)
+            ->where('tanggal', date('Y-m-d'))
+            ->first();
+            $alreadyAbsen = 'false';
+            if ($absensi) {
+                $alreadyAbsen = $absensi->already_absen;
+                $alreadyAbsen = 'true';
+            } else {
+                // Jika data absensi tidak ada untuk user dan tanggal saat ini
+                $alreadyAbsen;
+            }
+            // Mengambil Role Name Dari Relasi User
             $role = $user->role->name;
+            // Mengambil Position Name Dari Relasi User
             $position = $user->position->name;
-            // $jadwalkerja = $user->jadwalkerja->slug;
+            // Mengambil Jadwal Shift Dari Relasi User
+            $jadwalId = $user->jadwalkerja->shift;
+
+
             
             if($user){
                 $success['token'] = $user->createToken('auth_token')->plainTextToken;
-                $success['name'] = $user->name;
-                $success['nik'] = $user->nik;
-                $success['role'] = $role; 
                 $success['id'] = $user->id;
+                $success['nik'] = $user->nik;
                 $success['first_name'] = $user->first_name;
                 $success['last_name'] = $user->last_name;
+                $success['name'] = $user->name;
                 $success['email'] = $user->email;
                 $success['dob'] = $user->dob;
                 $success['phone_number'] = $user->phone_number;
                 $success['image'] = $user->image;
+                $success['role'] = $role; 
                 $success['position'] = $position;
-                // $success['jadwalkerja'] = $jadwalkerja;
+                $success['Shift'] = $jadwalId;
+
+                $success['already_absen'] = $alreadyAbsen;
+
+
                 return response()->json([
                     'success'=> true,
                     'message' => 'Login Berhasil',

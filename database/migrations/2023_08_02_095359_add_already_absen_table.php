@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('jadwal_kerjas', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id')->after('id');
-
-            $table->foreign('user_id')->references('id')->on('users');
+        Schema::table('absensi', function (Blueprint $table) {
+            $table->boolean('already_absen')->default(false);
         });
     }
 
@@ -23,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('jadwal_kerjas', function (Blueprint $table) {
+        Schema::table('absensi', function (Blueprint $table) {
             //
         });
     }

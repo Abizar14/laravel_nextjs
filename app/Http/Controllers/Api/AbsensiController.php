@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AbsensiResource;
 use App\Models\Absensi;
+use App\Models\JadwalKerja;
 use App\Models\User;
+use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -15,61 +17,16 @@ class AbsensiController extends Controller
 {
     public function index()
     {
-        $absensi = Absensi::latest();
+        $absensi = Absensi::all();
 
         return new AbsensiResource(true, 'Absen Berhasil', $absensi);
     }
 
-    
-
-
-
-    // public function store(Request $request)
-    // {
-    //     $absensi = Absensi::whereUserId($request->user_id)->whereTanggal(date('Y-m-d'))->first();
-    //     if ($absensi) {
-    //         return redirect()->back()->with('error','Absensi hari ini telah terisi');
-    //     }
-
-    //     // Validasi data
-    //     $validator = Validator::make($request->all(), [
-    //         'tanggal' => 'required|date',
-    //         'keterangan' => 'required|in:masuk,alpha,telat,cuti,izin,sakit',
-    //         'jam_masuk' => 'required|date_format:H:i:s',
-    //         'jam_keluar' => 'required|date_format:H:i:s',
-    //         'image' => 'required',
-    //         'coordinates' => 'required'
-    //     ]);
-
-    //     // Validasi pesan ketika data json error
-    //     if ($validator->fails()) {
-    //         return response()->json($validator->errors(), 402);
-    //     }
-
-    //     // Buat data absensi
-    //     $data = [
-    //         "user_id" => $request->user_id,
-    //         "keterangan" => $request->keterangan,
-    //         "tanggal" => $request->tanggal,
-    //         "jam_masuk" => $request->jam_masuk,
-    //         "jam_keluar" => $request->jam_keluar,
-    //         "image" => $request->image,
-    //         "coordinates" => $request->coordinates
-    //     ];
-
-    //     $jamMasuk = strtotime($data['jam_masuk']);
-    //     $jamKeluar = strtotime($data['jam_keluar']);
-    //     $jamPulang = strtotime(config('absensi.jam_pulang'));
-
-    //     if ($request->keterangan == 'Masuk' || $request->keterangan == 'Telat') {
-    //         $data['keterangan'] = $this->absensiMasuk($jamMasuk);
-    //     } else {
-    //         $data['keterangan'] = $this->absensiKeluar($jamMasuk, $jamKeluar, $jamPulang);
-    //     }
-
-    //     $absensi = Absensi::create($data);
-    //     return new AbsensiResource(true, 'Absen', $absensi);
-    // }
+    public function update(Request $request, Absensi $absensi , $id) {
+        $data = $request->all();
+        
+        $absensi = $absensi->update($data);
+    }
 
     
     public function absenMasuk(Request $request)
@@ -78,21 +35,23 @@ class AbsensiController extends Controller
         $date = new DateTime('now', new DateTimeZone($timezone));
         $tanggal = $date->format('Y-m-d');
         $localtime = $date->format('H:i:s');
-        
-        $absensi = Absensi::whereUserId($request->user_id)->whereTanggal($tanggal)->first();
+
+        $absensi = Absensi::with('jadwalKerja')->whereUserId($request->user_id)->whereTanggal($tanggal)->first();
+        $already_absen = $request->already_absen;
         if ($absensi) {
-            return response()->json(['error' => 'Absen Masuk Sudah Terisi']);
+            return response()->json([
+                'error' => 'Absen Masuk Sudah Terisi',
+                'data' => $already_absen
+            ]);
         }
 
         // Validasi data
         $validator = Validator::make($request->all(), [
             'tanggal' => 'required|date_format:Y-m-d',
+            // 'terlambat' => 'required',
             'keterangan' => 'required|in:masuk,alpha,telat,cuti,izin,sakit',
             'jam_masuk' => 'required|date_format:H:i:s',
             'image' => 'required',
-            // 'coordinates' => 'required|array',
-            // 'coordinates.lat' => 'required|numeric',
-            // 'coordinates.lng' => 'required|numeric',
  
         ]);
 
@@ -101,52 +60,46 @@ class AbsensiController extends Controller
             return response()->json($validator->errors(), 402);
         }
 
-        // $latitude = $request->coordinates['lat'];
-        // $longitude = $request->coordinates['lng'];
+        
+    // Cek batasan absen masuk
+    $user_id = $request->user_id;
+    $jam_masuk = $localtime;
+    $jadwalkerja_id = $request->jadwalkerja_id;
 
-        // cek batasan absen masuk
-        $jamMasuk = $request->jam_masuk;
 
-        // Batas absen masuk untuk shift pagi
-        $batasAbsenShiftPagi = DateTime::createFromFormat('H:i:s', '07:00:00');
-        $batasAbsenShiftPagi->modify('+2 hours');
-        $batasAbsenShiftMalam = DateTime::createFromFormat('H:i:s', '18:00:00');
-        $batasAbsenShiftMalam->modify('+2 hours');
-
-        // Cek jenis shift berdasarkan jam masuk
-        $shift = '';
-        if($jamMasuk >= '07:00:00' && $jamMasuk <= '15:00:00') {
-            $shift = 'pagi';
-        } elseif($jamMasuk >= '18:00:00' && $jamMasuk <= '05:00:00') {
-            $shift = 'malam';
-        }
-
-        // Validasi Absen Masuk Terlambat
-        $isTerlambat = false;
-        if(($shift === 'pagi' && $date > $batasAbsenShiftPagi) || ($shift === 'malam' && $date > $batasAbsenShiftMalam)) {
-            $isTerlambat = true;
-        }
-
-        // Buat data absensi
-        $data = [
-            "user_id" => $request->user_id,
-            "jadwalkerja_id" => $request->jadwalkerja_id,
-            "keterangan" => $request->keterangan,
-            "tanggal" => $tanggal,
-            "jam_masuk" => $localtime,
-            "image" => $request->image,
-            // "coordinates" => ['lat' => $latitude, 'lng' => $longitude]
-        ];
-
-        $absensi = Absensi::create($data);
-
-        // Menambahkan pesan terlambat absen ke dalam respons JSON
-    $response = [
-    'absensi' => $absensi,
-    'terlambat' => $isTerlambat ? 'Anda Terlambat Absen Masuk' : 'Absen Masuk Berhasil'
-    ];
-        return new AbsensiResource(true, 'Absen', $response);
+    // Cek jenis shift berdasarkan jadwalkerja_id
+    $shift = '';
+    if ($jadwalkerja_id == 1) {
+        $shift = 'Shift Pagi';
+    } elseif ($jadwalkerja_id == 2) {
+        $shift = 'Shift Malam';
     }
+
+    // Cek apakah karyawan terlambat
+    $terlambat = 'Tidak Terlambat';
+    $waktuAbsenPalingLambatPagi = now()->setTime(9, 0, 0); // Batas waktu terlambat shift pagi
+    $waktuAbsenPalingLambatMalam = now()->setTime(21, 0, 0); // Batas waktu terlambat shift malam
+    if ($jadwalkerja_id == 1 && strtotime($jam_masuk) > $waktuAbsenPalingLambatPagi->timestamp) {
+        $terlambat = 'Terlambat Shift Pagi';
+    } elseif ($jadwalkerja_id == 2 && strtotime($jam_masuk) > $waktuAbsenPalingLambatMalam->timestamp) {
+        $terlambat = 'Terlambat Shift Malam';
+    }
+        
+        $input = $request->all();
+        $input['tanggal'] = $tanggal;
+        $input['jam_masuk'] = $jam_masuk;
+        $input['terlambat'] = $terlambat; // Sama seperti sebelumnya
+        
+        $absensi = Absensi::create($input);
+            $response = [
+                    'absensi' => $absensi,
+                    'terlambat' => $terlambat,
+                    'shift' => $shift
+                ];
+                return new AbsensiResource(true, 'Absen Berhasil Disimpan', $response);
+                
+            }
+    
 
     public function absenKeluar(Request $request)
 {
@@ -160,11 +113,7 @@ class AbsensiController extends Controller
         return response()->json(['error' => 'Anda belum melakukan absensi masuk hari ini']);
     }
 
-    $dt=[
-        'jam_keluar' => $localtime,
-        'jam_kerja' => date('H:i:s', strtotime($localtime) - strtotime($absensi->jam_masuk))
-    ];
-
+    
     
     // Validasi data
     $validator = Validator::make($request->all(), [
@@ -175,45 +124,73 @@ class AbsensiController extends Controller
     if ($validator->fails()) {
         return response()->json($validator->errors(), 402);
     }
-
-    // cek batasan jam keluar
-    $jamKeluar = $request->jam_keluar;
-
-    // Batas absen keluar untuk shift pagi (15.00 - 17 .00)
-    $batasAbsenKeluarShiftPagi = DateTime::createFromFormat('H:i:s', '17:00:00');
-    $batasAbsenKeluarShiftPagi->modify('-2 hours');
-
-    $batasAbsenKeluarShiftMalam = DateTime::createFromFormat('H:i:s', '07:00:00');
-    $batasAbsenKeluarShiftMalam->modify('-2 hours');
-
-    // cek jenis shift berdasarkan jam masuk
-    $shift = '';
-    $jamMasuk = $absensi->jam_masuk;
-    if ($jamMasuk >= '07:00:00' && $jamMasuk <= '15:00:00') {
-        $shift = 'pagi';
-    } elseif ($jamMasuk >= '18:00:00' || $jamMasuk <= '05:00:00') {
-        $shift = 'malam';
-    }
-
-    // Validasi absen keluar terlambat
-    $isTerlambat = false;
-    if (($shift === 'pagi' && $jamKeluar > $batasAbsenKeluarShiftPagi) || ($shift === 'malam' && $jamKeluar > $batasAbsenKeluarShiftMalam)) {
-        $isTerlambat = true;
-    }
-
-    if ($absensi->jam_keluar == "") {
-        $absensi->update($dt);
-        $pesan = $isTerlambat ? 'Anda terlambat absen keluar' : 'Absen keluar berhasil';
-        return response()->json(['message' => $pesan]);
-    } else {
-        return response()->json(['message' => 'Already exists']);
-    }
     
-
-
-    return new AbsensiResource(true, 'Absen Keluar Berhasil', $absensi);
+    // Cek batasan absen masuk
+        $user_id = $request->user_id;
+        $jam_keluar = $localtime;
+        $jadwalkerja_id = $request->jadwalkerja_id;
+    
+    
+        // Cek jenis shift berdasarkan jadwalkerja_id
+        $shift = '';
+        if ($jadwalkerja_id == 1) {
+            $shift = 'Shift Pagi';
+        } elseif ($jadwalkerja_id == 2) {
+            $shift = 'Shift Malam';
+        }
+    
+        // Cek apakah karyawan terlambat
+        $terlambat = 'Tidak Terlambat';
+        $waktuAbsenPulangPalingLambatPagi = now()->setTime(18, 0, 0); // Batas waktu terlambat shift pagi
+        $waktuAbsenPulangPalingLambatMalam = now()->setTime(7, 0, 0); // Batas waktu terlambat shift malam
+        if ($jadwalkerja_id == 1 && strtotime($absensi->jam_masuk) > $waktuAbsenPulangPalingLambatPagi->timestamp) {
+            $terlambat = 'Terlambat Pulang Shift Pagi';
+        } elseif ($jadwalkerja_id == 2 && strtotime($absensi->jam_masuk) > $waktuAbsenPulangPalingLambatMalam->timestamp) {
+            $terlambat = 'Terlambat Pulang Shift Malam';
+        }
+        
+        
+        $dt=[
+            'user_id' => $user_id,
+            'jam_masuk'=> $absensi->jam_masuk,
+            'jam_keluar' => $jam_keluar,
+            'jam_kerja' => date('H:i:s', strtotime($localtime) - strtotime($absensi->jam_masuk))
+        ];
+        
+        if ($absensi->jam_keluar == "") {
+            $absensi = $absensi->update($dt);
+            return response()->json([
+                'message' => 'Anda Berhasil Absen Keluar',
+                'data' => $dt,
+                'shift' => $shift,
+                'pesanTerlambat' => $terlambat
+            ]);
+        } else {
+            return response()->json(['message' => 'Sudah Absen Pulang']);
+        }
 }
 
+
+                // if($absensi->jadwalkerja_id == 1) {
+                    
+                // }
+        
+        
+                
+                // $terlambat = 'tidak'; // Set default value untuk terlambat
+                
+                // // Batas waktu terlambat untuk shift pagi adalah pukul 09:00 pagi
+                // $batasWaktuShiftPagi = new \DateTime($tanggal . ' 09:00:00');
+                // // Batas waktu terlambat untuk shift malam adalah pukul 21:00 (9:00 PM)
+                // $batasWaktuShiftMalam = new \DateTime($tanggal . ' 21:00:00');
+                // // Ubah format jam masuk menjadi DateTime
+                // $jamMasukDateTime = \DateTime::createFromFormat('H:i:s', $jam_masuk);
+                // // Cek status terlambat berdasarkan shift
+                // if ($jadwalkerja_id === 1 && $jamMasukDateTime > $batasWaktuShiftPagi) {
+                //         $terlambat = 'Terlambat Shift Pagi';
+                //     } elseif ($jadwalkerja_id === 2 && $jamMasukDateTime > $batasWaktuShiftMalam) {
+                //     $terlambat = 'Terlambat Shift Malam';
+                // }
 
 
     // public function izinCuti(Request $request) {
@@ -271,8 +248,11 @@ class AbsensiController extends Controller
     //     return new AbsensiResource(true, 'Sakit', $absensi);
     // }
 
-    public function show(Absensi $absensi) {
+    public function show($id) {
+        $absensi = Absensi::findOrFail($id);
+
         return new AbsensiResource(true, 'Absensi Berhasil Ditampilkan', $absensi);
     }
 
 }
+

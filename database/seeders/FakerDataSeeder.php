@@ -19,7 +19,7 @@ class FakerDataSeeder extends Seeder
         $users = [
             [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI001',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -33,7 +33,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI002',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -48,7 +48,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI003',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -63,7 +63,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI004',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -78,7 +78,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI005',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -93,7 +93,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI006',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -108,7 +108,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI007',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -123,7 +123,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI008',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -138,7 +138,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI009',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',
@@ -153,7 +153,7 @@ class FakerDataSeeder extends Seeder
         ],
         [
             'role_id' => 1,
-            // 'jadwalkerja_id' => 1,
+            'jadwalkerja_id' => 1,
             'nik' => 'ABI010',
             'first_name' => 'Abizar',
             'last_name' => 'Zauli',

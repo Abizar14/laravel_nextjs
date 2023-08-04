@@ -29,7 +29,8 @@ Route::apiResource('/users', App\Http\Controllers\Api\UserController::class);
 // Absensi
 Route::post('/absensi/absenmasuk', [AbsensiController::class, 'absenMasuk']);
 Route::post('/absensi/absenkeluar', [AbsensiController::class, 'absenKeluar']);
-Route::post('/absensi/store', [AbsensiController::class, 'store']);
+Route::get('/absensi', [AbsensiController::class, 'index']);
+Route::get('/absensi/{id}', [AbsensiController::class, 'show']);
 
 // Jadwal Kerja
 Route::apiResource('/jadwalkerja', App\Http\Controllers\Api\JadwalKerjaController::class);
@@ -37,18 +38,22 @@ Route::apiResource('/jadwalkerja', App\Http\Controllers\Api\JadwalKerjaControlle
 // Cuti
 Route::get('/cuti',[CutiController::class, 'index']);
 Route::post('/cuti',[CutiController::class, 'store']);
+Route::get('/cuti',[CutiController::class, 'show']);
 
 // Izin
 Route::get('izin', [IzinController::class, 'index']);
 Route::post('izin', [IzinController::class, 'store']);
+Route::get('izin', [IzinController::class, 'show']);
 
 // Salary
 Route::get('/salary', [SalaryController::class, 'index']);
 Route::post('/salary', [SalaryController::class, 'store']);
+Route::get('/salary/{id}', [SalaryController::class, 'show']);
 
 // Position
 Route::get('/position', [PositionController::class, 'index']);
 Route::post('/position', [PositionController::class, 'store']);
+Route::get('/position/{id}', [PositionController::class, 'show']);
 
 // Register
 Route::get('/register', [AuthController::class, 'register']);

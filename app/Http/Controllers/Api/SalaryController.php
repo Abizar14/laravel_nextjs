@@ -96,10 +96,16 @@ class SalaryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, $id)
     {
-        //
+        $salary = Salary::findOrFail($id);
+        if (!$salary){
+            return response()->json([
+                "success" => false,
+                "message" =>'Data not found',
+            ], 401);
     }
+}
 
     /**
      * Show the form for editing the specified resource.

@@ -14,7 +14,7 @@ class JadwalKerja extends Model
     protected $table = 'jadwal_kerjas';
 
     protected $fillable = [
-        'user_id', 'slug', 'tgl_masuk', 'jam_masuk', 'jam_keluar'    
+        'shift', 'tgl_masuk', 'jam_masuk', 'jam_keluar'    
     ];
 
     public function absensi() {
@@ -22,6 +22,6 @@ class JadwalKerja extends Model
     }
 
     public function user() {
-        return $this->belongsTo(User::class);
+        return $this->hasOne(User::class);
     }
 }

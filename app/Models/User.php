@@ -59,7 +59,7 @@ class User extends Authenticatable
     }
 
     public function jadwalkerja() {
-        return $this->hasMany(JadwalKerja::class);
+        return $this->belongsTo(JadwalKerja::class);
     }
 
     public function role() {

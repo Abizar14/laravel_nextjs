@@ -25,7 +25,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'nik' => 'required',
             'role_id' => 'required',
-            // 'jadwalkerja_id' => 'required',
+            'jadwalkerja_id' => 'required',
             'first_name' => 'required',
             'last_name' => 'required',
             'name'     => 'required',
@@ -52,7 +52,7 @@ class UserController extends Controller
         $user = User::create([
             'nik' => $nikGenerate,
             'role_id'   => $request->role_id,
-            // 'jadwalkerja_id'   => $request->jadwalkerja_id,
+            'jadwalkerja_id'   => $request->jadwalkerja_id,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'name'     => $request->name,
@@ -68,20 +68,34 @@ class UserController extends Controller
         return new UserResource(true, 'Data Post Berhasil Ditambahkan!', $user);
     }
 
-    public function show(Request $request) {
+    public function show(Request $request, $id) {
         
-        $id = $request->input('id');
-        $user = User::where('id', $id)->get();
+        $user = User::with('absensi')->find($id);
 
         return new UserResource(true, 'Data Berhasil Ditampilkan', $user);
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user, $id)
     {
+        $user = User::find($id);
+        
+        if(!$user) {
+            return response()->json(['message'=>'User not found'], 404);
+        }
         //define validation rules
         $validator = Validator::make($request->all(), [
+            // 'nik' => 'required',
+            'role_id' => 'required',
+            'jadwalkerja_id' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'name'     => 'required',
             'email'   => 'required',
+            'position_id' => 'required',
+            'dob' => 'required',
+            'phone_number' => 'required',
+            'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'password' => 'required' 
         ]);
 
         //check if validation fails
@@ -99,24 +113,38 @@ class UserController extends Controller
             //delete old image
             Storage::delete('public/users/'.$user->image);
 
+            // $nikGenerate = 'AB' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+
             //update post with new image
             $user->update([
+                // 'nik' => $nikGenerate,
+                'role_id'   => $request->role_id,
+                'jadwalkerja_id'   => $request->jadwalkerja_id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
                 'name'     => $request->name,
                 'email'   => $request->email,
-                'role'   => $request->role,
-                // 'position'   => $request->position,
-                'image'   => $image->hashName(),
-                //  
+                'dob' => $request->dob,
+                'phone_number' => $request->phone_number,
+                'image'     => $image->hashName(),
+                'password'   => $request->password,
+                'position_id'   => $request->position_id
             ]);
 
         } else {
 
             //update post without image
             $user->update([
+                'role_id'   => $request->role_id,
+                // 'jadwalkerja_id'   => $request->jadwalkerja_id,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
                 'name'     => $request->name,
                 'email'   => $request->email,
-                'role'   => $request->role,
-                // 'position'   => $request->position,
+                'dob' => $request->dob,
+                'phone_number' => $request->phone_number,
+                'password'   => $request->password,
+                'position_id'   => $request->position_id
             ]);
         }
 

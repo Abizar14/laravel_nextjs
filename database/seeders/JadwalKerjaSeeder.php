@@ -15,7 +15,7 @@ class JadwalKerjaSeeder extends Seeder
     public function run(): void
     {
         DB::table('jadwal_kerjas')->insert([
-            'user_id' => 1,
+            // 'user_id' => 1,
             'slug' => 'Pagi',
             'tgl_masuk' => '2023-07-14',
             'jam_masuk' => '07:00:00',
