@@ -30,7 +30,7 @@ Route::apiResource('/users', App\Http\Controllers\Api\UserController::class);
 Route::post('/absensi/absenmasuk', [AbsensiController::class, 'absenMasuk']);
 Route::post('/absensi/absenkeluar', [AbsensiController::class, 'absenKeluar']);
 Route::get('/absensi', [AbsensiController::class, 'index']);
-Route::get('/absensi/{id}', [AbsensiController::class, 'show']);
+Route::get('/absensi/{user_id}', [AbsensiController::class, 'showByUserId']);
 
 // Jadwal Kerja
 Route::apiResource('/jadwalkerja', App\Http\Controllers\Api\JadwalKerjaController::class);

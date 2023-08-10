@@ -92,11 +92,16 @@ class AbsensiController extends Controller
         
         $absensi = Absensi::create($input);
             $response = [
+                'shift' => $shift,
                     'absensi' => $absensi,
                     'terlambat' => $terlambat,
-                    'shift' => $shift
                 ];
-                return new AbsensiResource(true, 'Absen Berhasil Disimpan', $response);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Absen Berhasil Disimpan',
+                    'already_absen' => $already_absen,
+                    'response' => $response
+                ]);
                 
             }
     
@@ -247,12 +252,39 @@ class AbsensiController extends Controller
 
     //     return new AbsensiResource(true, 'Sakit', $absensi);
     // }
-
-    public function show($id) {
-        $absensi = Absensi::findOrFail($id);
-
-        return new AbsensiResource(true, 'Absensi Berhasil Ditampilkan', $absensi);
+    public function showByUserId(Request $request, $user_id) {
+        $absensi = Absensi::with('user')->where('user_id', $user_id)->get();
+    
+        if ($absensi->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada data absensi untuk user dengan ID ' . $user_id,
+                'absensi' => []
+            ]);
+        }
+    
+        $absensiData = [];
+        foreach ($absensi as $absen) {
+            $absensiData[] = [
+                'user_id' => $absen->user_id,
+                'user_name' => $absen->user->name,
+                'tanggal' => $absen->tanggal,
+                'keterangan' => $absen->keterangan,
+                'jam_masuk' => $absen->jam_masuk,
+                'jam_keluar' => $absen->jam_keluar,
+                'jam_kerja' => $absen->jam_kerja,
+                'image' => $absen->image,
+                'jadwalkerja_id' => $absen->jadwalkerja_id
+                // ... tambahkan atribut lain yang diperlukan
+            ];
+        }
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Absensi dengan Nama : ' . $absen->user->name . ' USER_ID : ' . $absen->user_id . ' berhasil ditampilkan',
+            'absensi' => $absensiData
+        ]);
     }
+    
 
 }
-

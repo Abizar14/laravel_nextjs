@@ -14,13 +14,25 @@ class JadwalKerjaSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('jadwal_kerjas')->insert([
-            // 'user_id' => 1,
-            'slug' => 'Pagi',
-            'tgl_masuk' => '2023-07-14',
-            'jam_masuk' => '07:00:00',
-            'jam_keluar' => '15:00:00'
-        ]);
+        $jadwal = [
+            [
+                'shift' => 'Pagi',
+                'tgl_masuk' => '2023-08-01',
+                'jam_masuk' => '07:00:00',
+                'jam_keluar' => '15:00:00',
+            ],
+            [
+                'shift' => 'Malam',
+                'tgl_masuk' => '2023-08-01',
+                'jam_masuk' => '18:00:00',
+                'jam_keluar' => '06:00:00',
+            ],
+        ];
+        
+        foreach($jadwal as $row)
+        {
+            JadwalKerja::create($row);
+        }
 
     }
 }
