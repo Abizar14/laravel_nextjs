@@ -37,13 +37,15 @@ class AbsensiController extends Controller
         $localtime = $date->format('H:i:s');
 
         $absensi = Absensi::with('jadwalKerja')->whereUserId($request->user_id)->whereTanggal($tanggal)->first();
-        $already_absen = $request->already_absen;
+        // $already_absen = $request->already_absen;
         if ($absensi) {
-            return response()->json([
-                'error' => 'Absen Masuk Sudah Terisi',
-                'data' => $already_absen
-            ]);
-        }
+            if ($absensi->already_absen == 'SUDAH ABSEN') {
+                return response()->json([
+                    'error' => 'Absen Masuk Sudah Terisi',
+                    'already_absen' => 'SUDAH ABSEN'
+                ], 200);
+            }
+        } 
 
         // Validasi data
         $validator = Validator::make($request->all(), [
@@ -51,7 +53,7 @@ class AbsensiController extends Controller
             // 'terlambat' => 'required',
             'keterangan' => 'required|in:masuk,alpha,telat,cuti,izin,sakit',
             'jam_masuk' => 'required|date_format:H:i:s',
-            'image' => 'required',
+            'image' => 'required'
  
         ]);
 
@@ -65,6 +67,7 @@ class AbsensiController extends Controller
     $user_id = $request->user_id;
     $jam_masuk = $localtime;
     $jadwalkerja_id = $request->jadwalkerja_id;
+
 
 
     // Cek jenis shift berdasarkan jadwalkerja_id
@@ -89,6 +92,7 @@ class AbsensiController extends Controller
         $input['tanggal'] = $tanggal;
         $input['jam_masuk'] = $jam_masuk;
         $input['terlambat'] = $terlambat; // Sama seperti sebelumnya
+        $input['already_absen'] = 'SUDAH ABSEN';
         
         $absensi = Absensi::create($input);
             $response = [
@@ -99,7 +103,7 @@ class AbsensiController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Absen Berhasil Disimpan',
-                    'already_absen' => $already_absen,
+                    'already_absen' => $absensi->already_absen,
                     'response' => $response
                 ]);
                 
@@ -134,6 +138,7 @@ class AbsensiController extends Controller
         $user_id = $request->user_id;
         $jam_keluar = $localtime;
         $jadwalkerja_id = $request->jadwalkerja_id;
+ 
     
     
         // Cek jenis shift berdasarkan jadwalkerja_id
@@ -254,14 +259,21 @@ class AbsensiController extends Controller
     // }
     public function showByUserId(Request $request, $user_id) {
         $absensi = Absensi::with('user')->where('user_id', $user_id)->get();
-    
+        // $alreadyAbsen = $request->already_absen;
+
+        // $alreadyAbsen = $request->already_absen;
+
+
         if ($absensi->isEmpty()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada data absensi untuk user dengan ID ' . $user_id,
-                'absensi' => []
+                'absensi' => [],
+                "status" => 'BELUM ABSEN'
             ]);
         }
+
+
     
         $absensiData = [];
         foreach ($absensi as $absen) {
@@ -281,7 +293,8 @@ class AbsensiController extends Controller
     
         return response()->json([
             'success' => true,
-            'message' => 'Absensi dengan Nama : ' . $absen->user->name . ' USER_ID : ' . $absen->user_id . ' berhasil ditampilkan',
+            'already_absen' => $absen->already_absen,
+            'message' => 'Absensi dengan Nama : ' . $absensi[0]['name'] . ' USER_ID : ' . $user_id . ' berhasil ditampilkan',
             'absensi' => $absensiData
         ]);
     }

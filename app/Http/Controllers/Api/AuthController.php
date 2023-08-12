@@ -10,6 +10,7 @@ use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -59,6 +60,10 @@ class AuthController extends Controller
 
     public function login(Request $request) {
         if(Auth::attempt(['nik' => $request->nik, 'password' => $request->password])) {
+            $timezone = "Asia/Makassar";
+            $date = new DateTime('now', new DateTimeZone($timezone));
+            $tanggal = $date->format('Y-m-d');
+            $localtime = $date->format('H:i:s');
             // Authentication passed
             $user = User::with(['role', 'position'])->where('nik', $request->nik)->first();
             
@@ -67,22 +72,28 @@ class AuthController extends Controller
 
             // Mengambil data absensi
             $absensi = Absensi::where('user_id', $user->id)
-            ->where('tanggal', date('Y-m-d'))
-            ->first();
-            $alreadyAbsen = 'false';
-            if ($absensi) {
-                $alreadyAbsen = $absensi->already_absen;
-                $alreadyAbsen = 'true';
-            } else {
-                // Jika data absensi tidak ada untuk user dan tanggal saat ini
-                $alreadyAbsen;
-            }
+            ->get();
+
             // Mengambil Role Name Dari Relasi User
             $role = $user->role->name;
             // Mengambil Position Name Dari Relasi User
             $position = $user->position->name;
             // Mengambil Jadwal Shift Dari Relasi User
             $jadwalId = $user->jadwalkerja->shift;
+            $absensiData = [];
+            foreach($absensi as $item) {
+                $alreadyAbsen = $item['already_absen'];
+
+                if ($alreadyAbsen === '') {
+                    $absensiData[] = [
+                        'already_absen' => 'BELUM ABSEN'
+                    ];
+                } else {
+                    $absensiData[] = [
+                        'already_absen' => $alreadyAbsen
+                    ];
+                }
+            }
 
 
             
@@ -101,22 +112,22 @@ class AuthController extends Controller
                 $success['position'] = $position;
                 $success['Shift'] = $jadwalId;
 
-                $success['already_absen'] = $alreadyAbsen;
-
 
                 return response()->json([
                     'success'=> true,
                     'message' => 'Login Berhasil',
+                    'status' => $absensiData,
                     'data' => $success
                 ]);
+            } 
             } else {
                 return response()->json([
                     'success'=>false,
                     'error'=>'NIK Tidak Terdaftar!',
+                    'status' => 'BELUM ABSEN',
                     'data' => null
                     ]);
-            }
-        }
+        } 
     }
 
     public function logout(Request $request) {

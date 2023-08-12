@@ -68,5 +68,5 @@ Route::get('/logined', [AuthController::class, 'logined'])->middleware(['auth:sa
 Route::get('/getcsrf', [AuthController::class, 'getCsrfCookie'])->middleware(['auth:sanctum']);
 
 // Relationship Absensi Dan User
-Route::apiResource('/users/absensi/jadwalkerja/cuti/izin/salary/position/{id}', App\Http\Controllers\Api\UserAbsensiController::class);
+Route::apiResource('/users/absensi', App\Http\Controllers\Api\UserAbsensiController::class);
 
